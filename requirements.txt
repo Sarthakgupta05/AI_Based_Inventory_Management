@@ -1,0 +1,10 @@
+# Requirements for running the Streamlit app and forecasting
+# Pinned or constrained versions help avoid build surprises on hosted platforms.
+streamlit
+pandas
+numpy
+matplotlib
+joblib
+pmdarima
+statsmodels
+scikit-learn
