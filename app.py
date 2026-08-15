@@ -10,7 +10,13 @@ Usage:
 """
 import os
 import io
-import joblib
+import pickle
+try:
+    import joblib
+except ModuleNotFoundError:
+    # joblib not installed in the environment (Streamlit Cloud sometimes omits optional deps).
+    # Fall back to Python's pickle for loading/saving model files so the app doesn't crash on import.
+    joblib = None
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -93,7 +99,12 @@ if df is not None:
     model = None
     if os.path.exists(model_path):
         try:
-            model = joblib.load(model_path)
+            if joblib is not None:
+                model = joblib.load(model_path)
+            else:
+                # fallback to pickle when joblib isn't available
+                with open(model_path, "rb") as f:
+                    model = pickle.load(f)
             st.success(f"Loaded model from {model_path}")
         except Exception as e:
             st.warning(f"Failed to load existing model: {e}")
@@ -119,7 +130,12 @@ if df is not None:
             st.success("ARIMA model fitted.")
             # Save model for reuse
             os.makedirs("models", exist_ok=True)
-            joblib.dump(arima_model, "models/arima_model.pkl")
+            if joblib is not None:
+                joblib.dump(arima_model, "models/arima_model.pkl")
+            else:
+                # fallback to pickle when joblib isn't available
+                with open("models/arima_model.pkl", "wb") as f:
+                    pickle.dump(arima_model, f)
             st.write("Saved model to models/arima_model.pkl")
             # Forecast
             fcast = arima_model.predict(n_periods=int(forecast_periods))
