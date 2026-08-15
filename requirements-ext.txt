@@ -1,0 +1,9 @@
+# Extra requirements for running the Streamlit app and forecasting
+streamlit
+pandas
+numpy
+matplotlib
+joblib
+pmdarima
+statsmodels
+scikit-learn
